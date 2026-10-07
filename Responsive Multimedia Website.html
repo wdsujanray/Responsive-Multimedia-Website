@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sujan's media mix • responsive</title>
+  <style>
+    /* ---------- RESET & BASE ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background: radial-gradient(circle at 20% 20%, #1a1f35, #080b14 90%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.8rem 1rem;
+      color: #eef2ff;
+    }
+
+    /* ---------- MAIN WRAPPER ---------- */
+    .wrapper {
+      max-width: 1180px;
+      width: 100%;
+      background: rgba(18, 22, 38, 0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 3.2rem;
+      padding: 2.2rem 1.8rem;
+      box-shadow: 0 35px 55px -25px rgba(0, 0, 0, 0.95), inset 0 1px 2px rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(130, 160, 255, 0.18);
+      transition: all 0.3s ease;
+    }
+
+    h1 {
+      font-weight: 500;
+      font-size: clamp(1.8rem, 6vw, 2.6rem);
+      letter-spacing: -0.02em;
+      text-align: center;
+      margin-bottom: 1.4rem;
+      background: linear-gradient(135deg, #cfdeff, #a5bcff, #d9e4ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 4px 20px rgba(90, 140, 255, 0.4);
+    }
+
+    /* ---------- GRID ---------- */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.8rem;
+      margin-top: 0.4rem;
+    }
+
+    @media (min-width: 750px) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+      .wrapper {
+        padding: 2.8rem 2.4rem;
+      }
+    }
+
+    /* ---------- CARDS ---------- */
+    .card {
+      background: rgba(12, 17, 28, 0.7);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-radius: 2.2rem;
+      padding: 1.6rem 1.2rem 1.6rem 1.2rem;
+      box-shadow: 0 18px 30px -12px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(160, 190, 255, 0.1);
+      transition: transform 0.25s ease, box-shadow 0.35s ease, border-color 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 1px solid rgba(90, 130, 250, 0.08);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 28px 38px -16px #000000d0, inset 0 0 0 1px rgba(180, 210, 255, 0.28);
+      border-color: rgba(140, 180, 255, 0.35);
+    }
+
+    .card h2 {
+      font-size: 1.3rem;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      margin-bottom: 1.3rem;
+      color: #ccdbff;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px dashed #3e4f7a;
+      padding-bottom: 0.7rem;
+      width: 100%;
+      justify-content: center;
+      text-shadow: 0 2px 8px #2a3f90;
+    }
+
+    /* ---------- MEDIA FRAMES (consistent weight) ---------- */
+    .media-frame {
+      width: 100%;
+      border-radius: 1.6rem;
+      overflow: hidden;
+      background: #0f1422;
+      padding: 0.3rem;
+      box-shadow: 0 8px 18px -6px #00000080;
+    }
+
+    /* ===== HD VIDEO — HEAVIER WEIGHT ===== */
+    .video-card .media-frame {
+      padding: 0.55rem;
+      background: linear-gradient(145deg, #131a2e, #0c1120);
+      border: 1px solid #374a77;
+      box-shadow: 0 18px 30px -10px #000000d0, 0 0 25px #2a3f9020, inset 0 0 15px #00000060;
+    }
+
+    .video-card video {
+      border-radius: 1.3rem;
+      box-shadow: 0 12px 28px -10px #000000e0, 0 0 40px #3a52a030;
+      border: 1px solid #4a5f96;
+      background: #000;
+      width: 100%;
+    }
+
+    img, video, canvas {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 1.4rem;
+      background: #0a0e17;
+    }
+
+    /* ---------- IMAGE ZOOM POPUP ---------- */
+    .image-popup {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.94);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      padding: 2rem;
+      cursor: zoom-out;
+      animation: fadeIn 0.25s ease;
+    }
+    .image-popup.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .image-popup img {
+      max-width: 92vw;
+      max-height: 88vh;
+      border-radius: 2rem;
+      box-shadow: 0 0 80px #4f7eff, 0 0 120px #2a3f90;
+      border: 2px solid #aac0ff;
+      object-fit: contain;
+      transform: scale(0.96);
+      animation: popIn 0.3s ease forwards;
+    }
+
+    @keyframes popIn {
+      to { transform: scale(1); }
+    }
+
+    /* ---------- AUDIO VISUALIZER & PLAYLIST ---------- */
+    .audio-visualizer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 5px;
+      height: 62px;
+      margin-bottom: 0.6rem;
+      width: 100%;
+      padding: 0 0.3rem;
+    }
+    .visual-bar {
+      width: 8px;
+      background: linear-gradient(to top, #3f5ed6, #8a9eff, #cfdeff);
+      border-radius: 6px;
+      transition: height 0.06s ease;
+      height: 10px;
+      box-shadow: 0 0 12px #4f6eff, 0 0 4px #aac0ff;
+    }
+    .music-list {
+      width: 100%;
+      margin: 1rem 0 0.2rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      justify-content: center;
+    }
+    .music-btn {
+      background: #1d2540;
+      border: 1px solid #3d4f7c;
+      color: #cddcff;
+      padding: 0.5rem 1.1rem;
+      border-radius: 2.5rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 10px #00000050;
+      letter-spacing: 0.2px;
+    }
+    .music-btn:hover, .music-btn.active {
+      background: #3e5ab3;
+      border-color: #b0c4ff;
+      color: white;
+      box-shadow: 0 0 18px #5f7eff, 0 0 8px #8a9eff;
+      transform: scale(1.02);
+    }
+
+    audio {
+      width: 100%;
+      border-radius: 2.5rem;
+      margin-top: 0.4rem;
+      background: #1a2238;
+      padding: 0.3rem;
+      box-shadow: 0 8px 16px -5px black;
+      outline: none;
+    }
+
+    audio::-webkit-media-controls-panel {
+      background: #1a2238;
+      border-radius: 2.5rem;
+    }
+
+    /* ---------- HEART ANIMATION (refined) ---------- */
+    .heart-animation-container {
+      width: 100%;
+      aspect-ratio: 1 / 0.88;
+      background: radial-gradient(circle at 25% 15%, #222a4a, #0b0f1c);
+      border-radius: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #33436b;
+      box-shadow: inset 0 0 50px #00000090, 0 0 30px #1a1f3a;
+      padding: 1rem;
+    }
+
+    .heart-fall {
+      position: absolute;
+      top: -10%;
+      animation: fallHeart 5s infinite linear;
+      font-size: 1.8rem;
+      filter: drop-shadow(0 0 14px #ff4d6d);
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.9;
+    }
+    .heart-fall:nth-child(1) { left: 8%; animation-duration: 4.2s; animation-delay: 0s; }
+    .heart-fall:nth-child(2) { left: 27%; animation-duration: 6.8s; animation-delay: 1.6s; font-size: 2.1rem; }
+    .heart-fall:nth-child(3) { left: 52%; animation-duration: 5.4s; animation-delay: 0.9s; }
+    .heart-fall:nth-child(4) { left: 73%; animation-duration: 7.2s; animation-delay: 2.4s; font-size: 1.5rem; }
+    .heart-fall:nth-child(5) { left: 89%; animation-duration: 4.9s; animation-delay: 0.5s; }
+
+    @keyframes fallHeart {
+      0% { top: -10%; opacity: 0; transform: rotate(0deg) scale(0.5); }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { top: 110%; opacity: 0; transform: rotate(360deg) scale(1.3); }
+    }
+
+    .heart-main {
+      font-size: 4.8rem;
+      animation: heartbeat 1.8s infinite ease-in-out;
+      filter: drop-shadow(0 0 30px #ff4d6d) drop-shadow(0 0 10px #ff99aa);
+      z-index: 6;
+      margin-bottom: 0.6rem;
+      cursor: pointer;
+      transition: transform 0.12s;
+      line-height: 1;
+    }
+    .heart-main:active { transform: scale(0.88); }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      30% { transform: scale(1.22); }
+      60% { transform: scale(0.94); }
+    }
+
+    .svg-text {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 1.25rem;
+      fill: #ffb3c6;
+      text-shadow: 0 0 20px #ff4d6d;
+      animation: glowText 2.6s infinite alternate;
+      letter-spacing: 2.5px;
+      font-weight: 600;
+      z-index: 6;
+      filter: drop-shadow(0 0 10px #ff99aa);
+    }
+
+    @keyframes glowText {
+      from { fill: #ffb3c6; filter: drop-shadow(0 0 6px #ff99aa); }
+      to { fill: #fff0f5; filter: drop-shadow(0 0 22px #ff4d6d); }
+    }
+
+    .circle-burst {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffe0e8, #ff4d6d, transparent 80%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 2;
+      animation: burstDown 1.8s ease-in forwards;
+      box-shadow: 0 0 35px #ff4d6d;
+    }
+
+    @keyframes burstDown {
+      0% { top: -40px; opacity: 1; transform: scale(0.6); }
+      100% { top: 110%; opacity: 0; transform: scale(3); }
+    }
+
+    .circle-ring {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 3px dashed #ff99aa;
+      animation: ringSpin 9s infinite linear;
+      opacity: 0.45;
+      z-index: 2;
+      box-shadow: 0 0 30px #ff4d6d30;
+    }
+
+    @keyframes ringSpin {
+      from { transform: rotate(0deg) scale(1); border-color: #ff99aa; }
+      to { transform: rotate(360deg) scale(1.2); border-color: #ff4d6d; }
+    }
+
+    /* ---------- CANVAS (interactive) ---------- */
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 0.7;
+      border-radius: 2rem;
+      overflow: hidden;
+      background: #0b101e;
+      box-shadow: inset 0 0 30px #00000090, 0 10px 22px -8px black;
+      border: 1px solid #2d3a5e;
+    }
+
+    canvas#interactiveCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: 2rem;
+      cursor: crosshair;
+      background: #0e1425;
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: #9aaed6;
+      margin-top: 0.7rem;
+      text-align: center;
+      letter-spacing: 0.3px;
+      text-shadow: 0 1px 4px #00000060;
+    }
+
+    @media (max-width: 480px) {
+      .wrapper { padding: 1.5rem 1rem; border-radius: 2.2rem; }
+      .card { padding: 1.2rem 0.9rem; }
+      .card h2 { font-size: 1.1rem; }
+      audio { height: 42px; }
+      .visual-bar { width: 6px; }
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 2.2rem;
+      font-size: 0.85rem;
+      color: #7e8fbb;
+      letter-spacing: 0.4px;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <h1>✦ media intersection ✦</h1>
+    <div class="grid">
+      <!-- IMAGE CARD with zoom popup -->
+      <div class="card">
+        <h2>🖼️ image</h2>
+        <div class="media-frame" id="imageFrame" style="cursor: zoom-in;">
+          <img 
+            id="zoomImage"
+            src="https://picsum.photos/600/400?random=42" 
+            alt="Abstract landscape" 
+            loading="lazy"
+          >
+        </div>
+        <p class="hint">click image to zoom</p>
+      </div>
+
+      <!-- AUDIO CARD with visualizer & playlist -->
+      <div class="card">
+        <h2>🎵 audio</h2>
+        <div class="audio-visualizer" id="audioVisualizer"></div>
+        <audio id="audioPlayer" controls loop>
+          <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+          Your browser does not support the audio element.
+        </audio>
+        <div class="music-list" id="musicList">
+          <button class="music-btn active" data-src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">🎵 track 1</button>
+          <button class="music-btn" data-src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3">🎵 track 2</button>
+          <button class="music-btn" data-src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3">🎵 track 3</button>
+        </div>
+        <p class="hint">choose a track • bars dance with sound</p>
+      </div>
+
+      <!-- HD VIDEO CARD — heavier visual weight -->
+      <div class="card video-card">
+        <h2>🎬 HD video</h2>
+        <div class="media-frame">
+          <video 
+            id="hdVideo"
+            controls 
+            muted 
+            loop 
+            playsinline 
+            poster="https://picsum.photos/600/400?random=99"
+            preload="metadata"
+          >
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        <p class="hint">HD • controls • heavy frame</p>
+      </div>
+
+      <!-- HEART ANIMATION CARD -->
+      <div class="card">
+        <h2>❤️ heartbeat</h2>
+        <div class="heart-animation-container" id="heartContainer">
+          <div class="heart-fall">❤️</div>
+          <div class="heart-fall">❤️</div>
+          <div class="heart-fall">❤️</div>
+          <div class="heart-fall">❤️</div>
+          <div class="heart-fall">❤️</div>
+          <div class="circle-ring"></div>
+          <div class="heart-main" id="heartClick">❤️</div>
+          <svg width="250" height="55" viewBox="0 0 250 55" style="z-index: 6;">
+            <text x="50%" y="70%" text-anchor="middle" class="svg-text" dominant-baseline="middle">
+              Sujan Chandra Ray
+            </text>
+          </svg>
+        </div>
+        <p class="hint">tap heart • burst + tune</p>
+      </div>
+
+      <!-- INTERACTIVE CANVAS — unchanged -->
+      <div class="card" style="grid-column: 1 / -1;">
+        <h2>🖌️ interactive canvas</h2>
+        <div class="canvas-wrapper">
+          <canvas id="interactiveCanvas" width="800" height="450"></canvas>
+        </div>
+        <p class="hint">move mouse / touch • draw glowing particles</p>
+      </div>
+    </div>
+    <div class="footer-note">responsive • audio • video • image • animation • canvas</div>
+  </div>
+
+  <!-- IMAGE POPUP OVERLAY -->
+  <div class="image-popup" id="imagePopup">
+    <img id="popupImg" src="" alt="zoomed image">
+  </div>
+
+  <script>
+    (function() {
+      // ---------- 1. IMAGE POPUP ZOOM ----------
+      const imageFrame = document.getElementById('imageFrame');
+      const zoomImage = document.getElementById('zoomImage');
+      const popup = document.getElementById('imagePopup');
+      const popupImg = document.getElementById('popupImg');
+
+      imageFrame.addEventListener('click', (e) => {
+        e.stopPropagation();
+        popupImg.src = zoomImage.src;
+        popup.classList.add('active');
+      });
+
+      popup.addEventListener('click', () => {
+        popup.classList.remove('active');
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && popup.classList.contains('active')) {
+          popup.classList.remove('active');
+        }
+      });
+
+      // ---------- 2. AUDIO VISUALIZER + PLAYLIST ----------
+      const audio = document.getElementById('audioPlayer');
+      const visualizer = document.getElementById('audioVisualizer');
+      const musicButtons = document.querySelectorAll('.music-btn');
+      const BAR_COUNT = 24;
+
+      for (let i = 0; i < BAR_COUNT; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'visual-bar';
+        visualizer.appendChild(bar);
+      }
+      const bars = document.querySelectorAll('.visual-bar');
+
+      let audioContext = null;
+      let analyser = null;
+      let sourceNode = null;
+      let animationId = null;
+
+      function initAudioContext() {
+        if (audioContext) return;
+        try {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          analyser = audioContext.createAnalyser();
+          analyser.fftSize = 64;
+          sourceNode = audioContext.createMediaElementSource(audio);
+          sourceNode.connect(analyser);
+          analyser.connect(audioContext.destination);
+        } catch (e) {
+          console.warn('Web Audio API not supported:', e);
+        }
+      }
+
+      function updateBars() {
+        if (!analyser) {
+          if (!audio.paused) {
+            bars.forEach((bar, idx) => {
+              const height = 10 + Math.abs(Math.sin(Date.now() / 250 + idx)) * 48;
+              bar.style.height = height + 'px';
+            });
+          } else {
+            bars.forEach(bar => bar.style.height = '10px');
+          }
+          animationId = requestAnimationFrame(updateBars);
+          return;
+        }
+
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(dataArray);
+
+        if (audio.paused) {
+          bars.forEach(bar => bar.style.height = '10px');
+        } else {
+          bars.forEach((bar, i) => {
+            const index = Math.floor(i * (dataArray.length / BAR_COUNT));
+            const value = dataArray[index] || 0;
+            const height = Math.max(10, (value / 255) * 58);
+            bar.style.height = height + 'px';
+          });
+        }
+        animationId = requestAnimationFrame(updateBars);
+      }
+
+      initAudioContext();
+      updateBars();
+
+      document.body.addEventListener('click', () => {
+        if (audioContext && audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+      });
+
+      musicButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const src = btn.getAttribute('data-src');
+          if (!src) return;
+          musicButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          audio.src = src;
+          audio.load();
+          audio.play().catch(e => console.log('playback error:', e));
+          if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume();
+          }
+        });
+      });
+
+      audio.addEventListener('play', () => {
+        if (audioContext && audioContext.state === 'suspended') audioContext.resume();
+        if (!animationId) updateBars();
+      });
+
+      // ---------- 3. HD VIDEO (heavier weight handled via CSS) ----------
+      // No JS changes needed for video.
+
+      // ---------- 4. HEART ANIMATION ----------
+      const heartMain = document.getElementById('heartClick');
+      const heartContainer = document.getElementById('heartContainer');
+
+      let heartAudioCtx = null;
+
+      function playHeartTune() {
+        try {
+          if (!heartAudioCtx) {
+            heartAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          }
+          if (heartAudioCtx.state === 'suspended') {
+            heartAudioCtx.resume();
+          }
+          const now = heartAudioCtx.currentTime;
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((freq, i) => {
+            const osc = heartAudioCtx.createOscillator();
+            const gain = heartAudioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.12, now + i * 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.45);
+            osc.connect(gain);
+            gain.connect(heartAudioCtx.destination);
+            osc.start(now + i * 0.1);
+            osc.stop(now + i * 0.1 + 0.45);
+          });
+        } catch (e) {
+          console.warn('Heart tune error:', e);
+        }
+      }
+
+      heartMain.addEventListener('click', (e) => {
+        e.stopPropagation();
+
+        const circleBurst = document.createElement('div');
+        circleBurst.className = 'circle-burst';
+        const randomLeft = Math.random() * 80 + 10;
+        circleBurst.style.left = randomLeft + '%';
+        circleBurst.style.top = '-100px';
+        heartContainer.appendChild(circleBurst);
+        setTimeout(() => circleBurst.remove(), 2000);
+
+        for (let i = 0; i < 8; i++) {
+          const newHeart = document.createElement('div');
+          newHeart.className = 'heart-fall';
+          newHeart.textContent = '❤️';
+          newHeart.style.left = Math.random() * 90 + '%';
+          newHeart.style.animationDuration = (3 + Math.random() * 4) + 's';
+          newHeart.style.animationDelay = '0s';
+          newHeart.style.fontSize = (1 + Math.random() * 1.6) + 'rem';
+          newHeart.style.position = 'absolute';
+          newHeart.style.top = '-10%';
+          newHeart.style.animation = `fallHeart ${3 + Math.random() * 4}s infinite linear`;
+          heartContainer.appendChild(newHeart);
+          setTimeout(() => newHeart.remove(), 7000);
+        }
+
+        playHeartTune();
+
+        heartMain.style.transform = 'scale(0.85)';
+        setTimeout(() => heartMain.style.transform = 'scale(1)', 180);
+      });
+
+      // ---------- 5. INTERACTIVE CANVAS — IDENTICAL ----------
+      const canvas = document.getElementById('interactiveCanvas');
+      const ctx = canvas.getContext('2d');
+
+      const CANVAS_WIDTH = 800;
+      const CANVAS_HEIGHT = 450;
+      canvas.width = CANVAS_WIDTH;
+      canvas.height = CANVAS_HEIGHT;
+
+      let particles = [];
+      const MAX_PARTICLES = 180;
+      const PARTICLE_LIFE_DECAY = 0.985;
+
+      let pointer = {
+        x: CANVAS_WIDTH / 2,
+        y: CANVAS_HEIGHT / 2,
+        active: false
+      };
+
+      const rand = (min, max) => Math.random() * (max - min) + min;
+
+      function addParticle(x, y) {
+        if (particles.length > MAX_PARTICLES) {
+          particles.shift();
+        }
+        const angle = rand(0, Math.PI * 2);
+        const speed = rand(0.5, 2.8);
+        const vx = Math.cos(angle) * speed * 0.7;
+        const vy = Math.sin(angle) * speed * 0.7;
+
+        const size = rand(2, 5.5);
+        const hue = rand(180, 280);
+        const saturation = rand(70, 100);
+        const lightness = rand(55, 85);
+        const color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+
+        particles.push({
+          x: x + rand(-3, 3),
+          y: y + rand(-3, 3),
+          vx: vx,
+          vy: vy,
+          size: size,
+          color: color,
+          life: 1.0,
+          decay: rand(0.003, 0.012)
+        });
+      }
+
+      function draw() {
+        ctx.fillStyle = 'rgba(10, 15, 28, 0.25)';
+        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vx *= 0.994;
+          p.vy *= 0.994;
+          p.vy += 0.02;
+          p.life *= PARTICLE_LIFE_DECAY;
+
+          if (p.life < 0.05 || p.x < -50 || p.x > CANVAS_WIDTH + 50 || p.y < -50 || p.y > CANVAS_HEIGHT + 50) {
+            particles.splice(i, 1);
+            continue;
+          }
+
+          ctx.beginPath();
+          const radius = p.size * (0.7 + 0.5 * p.life);
+          const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius * 2.2);
+          gradient.addColorStop(0, p.color);
+          gradient.addColorStop(0.7, p.color.replace('hsl', 'hsla').replace(')', ', 0.4)'));
+          gradient.addColorStop(1, 'rgba(30, 40, 80, 0)');
+
+          ctx.shadowColor = p.color;
+          ctx.shadowBlur = 12;
+          ctx.fillStyle = gradient;
+          ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.shadowBlur = 8;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, radius * 0.4, 0, Math.PI * 2);
+          ctx.fillStyle = '#ffffff';
+          ctx.fill();
+        }
+
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = 'transparent';
+
+        if (pointer.active) {
+          ctx.beginPath();
+          ctx.arc(pointer.x, pointer.y, 8, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(200, 220, 255, 0.25)';
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(pointer.x, pointer.y, 4, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(220, 235, 255, 0.7)';
+          ctx.fill();
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      function getCanvasCoords(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = CANVAS_WIDTH / rect.width;
+        const scaleY = CANVAS_HEIGHT / rect.height;
+
+        let clientX, clientY;
+
+        if (e.touches) {
+          if (e.touches.length === 0) return null;
+          clientX = e.touches[0].clientX;
+          clientY = e.touches[0].clientY;
+          e.preventDefault();
+        } else {
+          clientX = e.clientX;
+          clientY = e.clientY;
+        }
+
+        const x = (clientX - rect.left) * scaleX;
+        const y = (clientY - rect.top) * scaleY;
+
+        return {
+          x: Math.min(Math.max(x, 0), CANVAS_WIDTH),
+          y: Math.min(Math.max(y, 0), CANVAS_HEIGHT)
+        };
+      }
+
+      function onPointerMove(e) {
+        const coords = getCanvasCoords(e);
+        if (!coords) return;
+        pointer.x = coords.x;
+        pointer.y = coords.y;
+        pointer.active = true;
+
+        for (let i = 0; i < 3; i++) {
+          addParticle(coords.x, coords.y);
+        }
+      }
+
+      function onPointerLeave() {
+        pointer.active = false;
+      }
+
+      function onPointerDown(e) {
+        e.preventDefault();
+        const coords = getCanvasCoords(e);
+        if (!coords) return;
+        pointer.x = coords.x;
+        pointer.y = coords.y;
+        pointer.active = true;
+
+        for (let i = 0; i < 20; i++) {
+          addParticle(coords.x, coords.y);
+        }
+      }
+
+      canvas.addEventListener('mousemove', onPointerMove);
+      canvas.addEventListener('mouseleave', onPointerLeave);
+      canvas.addEventListener('mousedown', onPointerDown);
+
+      canvas.addEventListener('touchmove', onPointerMove, { passive: false });
+      canvas.addEventListener('touchstart', onPointerDown, { passive: false });
+      canvas.addEventListener('touchend', () => { pointer.active = false; });
+      canvas.addEventListener('touchcancel', () => { pointer.active = false; });
+
+      function drawStaticBackground() {
+        const grad = ctx.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        grad.addColorStop(0, '#0f1525');
+        grad.addColorStop(0.7, '#141c30');
+        grad.addColorStop(1, '#0b1220');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      }
+      drawStaticBackground();
+
+      for (let i = 0; i < 30; i++) {
+        addParticle(rand(100, 700), rand(80, 380));
+      }
+
+      draw();
+    })();
+  </script>
+</body>
+</html>
